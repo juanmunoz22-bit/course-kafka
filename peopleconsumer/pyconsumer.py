@@ -5,6 +5,8 @@ import os
 from dotenv import load_dotenv
 
 from kafka.consumer import KafkaConsumer
+from kafka import OffsetAndMetadata, TopicPartition
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,7 +32,8 @@ def main():
         bootstrap_servers=os.getenv("BOOTSTRAP_SERVERS"),
         group_id=os.getenv("CONSUMER_GROUP"),
         key_deserializer=people_key_deserializer,
-        value_deserializer=people_value_deserializer
+        value_deserializer=people_value_deserializer,
+        enable_auto_commit=False,
     )
 
     consumer.subscribe(os.getenv("TOPICS_PEOPLE_ADVANCED_NAME"))
@@ -42,6 +45,15 @@ def main():
             from partition {record.topic}
             at offset {record.offset}
             """
+        )
+
+        topic_partition = TopicPartition(record.topic, record.partition)
+        offset_metadata = OffsetAndMetadata(record.offset + 1, record.timestamp)
+
+        consumer.commit(
+            {
+                topic_partition: offset_metadata
+            }
         )
 
 
