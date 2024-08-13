@@ -1,14 +1,12 @@
 import logging
 import os
 
-from dotenv import load_dotenv
-
+import schemas
 from confluent_kafka import DeserializingConsumer
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroDeserializer
 from confluent_kafka.serialization import StringDeserializer
-
-import schemas
+from dotenv import load_dotenv
 from models import Person
 
 logging.basicConfig(level=logging.INFO)
